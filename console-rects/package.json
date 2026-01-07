@@ -1,6 +1,6 @@
 {
   "name": "console-rects",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "Visualize rectangles in the console using box-drawing characters. Perfect for debugging geometry code, visualizing overlapping rectangles, or drawing rectangles in terminal.",
   "type": "module",
   "main": "./dist/index.cjs",

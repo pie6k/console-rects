@@ -30,15 +30,15 @@ This will output a visual representation of the rectangles in your console:
 
 ```
 [0, 0]
-       ┌────────┐
+       ┌───0────┐
        │        │
        │        │
        │        │
-       │   ┏━━━━━━━━┓
+       │   ┏━━━1━━━━┓
        │   ┃    │   ┃
        │   ┃    │   ┃
        │   ┃    │   ┃
-       │   ┃   ╔════════╗
+       │   ┃   ╔═══2════╗
        └───┃───║┘   ┃   ║
            ┃   ║    ┃   ║
            ┃   ║    ┃   ║
