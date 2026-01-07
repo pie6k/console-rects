@@ -14,7 +14,7 @@ yarn install console-rects
 ## Usage
 
 ```typescript
-import { logRects } from "console-rects";
+import { logRects, getRectsLog } from "console-rects";
 
 const rectangles = [
   { x: 0, y: 0, width: 100, height: 100 },
@@ -23,6 +23,7 @@ const rectangles = [
 ];
 
 logRects(rectangles);
+getRectsLog(rectangles); // returns the string without logging to console
 ```
 
 This will output a visual representation of the rectangles in your console:
@@ -52,18 +53,52 @@ This will output a visual representation of the rectangles in your console:
 
 Each rectangle gets a different line style (light, heavy, double, dashed, dashed-heavy) based on its position in the array.
 
+You can also use it for snapshot testing:
+
+```ts
+expect(getRectsLog([transformer.zoom(2.5, { x: 0, y: 0.5 }, avaliableSize), avaliableSize])).toMatchInlineSnapshot(`
+  "
+  [-50, -75]
+              ┌───────────0───────────┐
+              │                       │
+              │                       │
+              │                       │
+              │                       │
+              │                       │
+              │                       │
+              ┏━━━━━━━━1━━━━━━━━━┓    │
+              ┃                  ┃    │
+              ┃                  ┃    │
+              ┃                  ┃    │
+              ┃                  ┃    │
+              ┃                  ┃    │
+              ┃                  ┃    │
+              ┃                  ┃    │
+              ┃                  ┃    │
+              ┃                  ┃    │
+              ┗━━━━━━━━━━━━━━━━━━┛    │
+              │                       │
+              │                       │
+              │                       │
+              │                       │
+              │                       │
+              │                       │
+              └───────────────────────┘
+                                        [200, 175]"
+`);
+```
+
 ## Options
 
 - `sizePerPoint` (default: `10`) - Controls the resolution/scale. Smaller values = higher detail.
 - `showLegend` (default: `true`) - Show coordinate labels at corners.
 - `startWithNewLine` (default: `true`) - Add a newline before the output.
-- `dontLog` (default: `false`) - Return the string without logging to console.
 
 ```typescript
 logRects(rectangles, {
   sizePerPoint: 20,
   showLegend: false,
-  dontLog: true,
+  startWithNewLine: false,
 });
 ```
 
