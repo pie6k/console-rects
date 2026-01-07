@@ -52,6 +52,41 @@ This will output a visual representation of the rectangles in your console:
 
 Each rectangle gets a different line style (light, heavy, double, dashed, dashed-heavy) based on its position in the array.
 
+You can also use it for snapshot testing:
+
+```ts
+expect(logRects([transformer.zoom(2.5, { x: 0, y: 0.5 }, avaliableSize), avaliableSize])).toMatchInlineSnapshot(`
+  "
+  [-50, -75]
+              ┌───────────0───────────┐
+              │                       │
+              │                       │
+              │                       │
+              │                       │
+              │                       │
+              │                       │
+              ┏━━━━━━━━1━━━━━━━━━┓    │
+              ┃                  ┃    │
+              ┃                  ┃    │
+              ┃                  ┃    │
+              ┃                  ┃    │
+              ┃                  ┃    │
+              ┃                  ┃    │
+              ┃                  ┃    │
+              ┃                  ┃    │
+              ┃                  ┃    │
+              ┗━━━━━━━━━━━━━━━━━━┛    │
+              │                       │
+              │                       │
+              │                       │
+              │                       │
+              │                       │
+              │                       │
+              └───────────────────────┘
+                                        [200, 175]"
+`);
+```
+
 ## Options
 
 - `sizePerPoint` (default: `10`) - Controls the resolution/scale. Smaller values = higher detail.
