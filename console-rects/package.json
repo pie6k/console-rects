@@ -1,7 +1,7 @@
 {
   "name": "console-rects",
   "version": "0.1.0",
-  "description": "",
+  "description": "Visualize rectangles in the console using box-drawing characters. Perfect for debugging geometry code.",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
@@ -17,7 +17,17 @@
     "dist",
     "README.md"
   ],
-  "keywords": [],
+  "keywords": [
+    "console",
+    "debug",
+    "visualization",
+    "rectangles",
+    "geometry",
+    "ascii",
+    "box-drawing",
+    "debugging",
+    "cli"
+  ],
   "author": {
     "name": "Adam Pietrasiak",
     "email": "adam@pietrasiak.com"
