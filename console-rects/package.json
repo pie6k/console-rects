@@ -1,7 +1,7 @@
 {
   "name": "console-rects",
-  "version": "0.1.0",
-  "description": "Visualize rectangles in the console using box-drawing characters. Perfect for debugging geometry code.",
+  "version": "0.1.2",
+  "description": "Visualize rectangles in the console using box-drawing characters. Perfect for debugging geometry code, visualizing overlapping rectangles, or drawing rectangles in terminal.",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
@@ -26,7 +26,18 @@
     "ascii",
     "box-drawing",
     "debugging",
-    "cli"
+    "cli",
+    "terminal",
+    "overlapping-rectangles",
+    "console-log",
+    "visualize-rectangles",
+    "draw-rectangles",
+    "debug-geometry",
+    "rectangle-collision",
+    "layout-debug",
+    "console-visualization",
+    "terminal-visualization",
+    "ascii-art"
   ],
   "author": {
     "name": "Adam Pietrasiak",

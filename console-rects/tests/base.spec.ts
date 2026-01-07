@@ -11,15 +11,15 @@ describe("basic", () => {
     expect(logRects(rectangles, { dontLog: true })).toMatchInlineSnapshot(`
       "
       [0, 0]
-             ┌────────┐        
+             ┌───0────┐        
              │        │        
              │        │        
              │        │        
-             │   ┏━━━━━━━━┓    
+             │   ┏━━━1━━━━┓    
              │   ┃    │   ┃    
              │   ┃    │   ┃    
              │   ┃    │   ┃    
-             │   ┃   ╔════════╗
+             │   ┃   ╔═══2════╗
              └───┃───║┘   ┃   ║
                  ┃   ║    ┃   ║
                  ┃   ║    ┃   ║
@@ -35,11 +35,11 @@ describe("basic", () => {
     expect(logRects(rectangles, { dontLog: true, sizePerPoint: 20 })).toMatchInlineSnapshot(`
       "
       [0, 0]
-             ┌───┐    
+             ┌─0─┐    
              │   │    
-             │ ┏━━━┓  
+             │ ┏━1━┓  
              │ ┃ │ ┃  
-             └─┃─╔═══╗
+             └─┃─╔═2═╗
                ┃ ║ ┃ ║
                ┗━║━┛ ║
                  ║   ║
@@ -49,11 +49,11 @@ describe("basic", () => {
 
     expect(logRects(rectangles, { dontLog: true, sizePerPoint: 20, showLegend: false })).toMatchInlineSnapshot(`
       "
-      ┌───┐    
+      ┌─0─┐    
       │   │    
-      │ ┏━━━┓  
+      │ ┏━1━┓  
       │ ┃ │ ┃  
-      └─┃─╔═══╗
+      └─┃─╔═2═╗
         ┃ ║ ┃ ║
         ┗━║━┛ ║
           ║   ║
@@ -62,7 +62,7 @@ describe("basic", () => {
 
     expect(logRects(rectangles, { dontLog: true, sizePerPoint: 5, showLegend: false })).toMatchInlineSnapshot(`
       "
-      ┌──────────────────┐                
+      ┌────────0─────────┐                
       │                  │                
       │                  │                
       │                  │                
@@ -70,7 +70,7 @@ describe("basic", () => {
       │                  │                
       │                  │                
       │                  │                
-      │       ┏━━━━━━━━━━━━━━━━━━┓        
+      │       ┏━━━━━━━━1━━━━━━━━━┓        
       │       ┃          │       ┃        
       │       ┃          │       ┃        
       │       ┃          │       ┃        
@@ -78,7 +78,7 @@ describe("basic", () => {
       │       ┃          │       ┃        
       │       ┃          │       ┃        
       │       ┃          │       ┃        
-      │       ┃       ╔══════════════════╗
+      │       ┃       ╔════════2═════════╗
       │       ┃       ║  │       ┃       ║
       │       ┃       ║  │       ┃       ║
       └───────┃───────║──┘       ┃       ║

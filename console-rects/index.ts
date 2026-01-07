@@ -1,4 +1,4 @@
-interface Rect {
+interface Rectangle {
   x: number;
   y: number;
   width: number;
@@ -11,8 +11,12 @@ const DOWN = 2;
 const LEFT = 4;
 const RIGHT = 8;
 
+type LineStyle = "light" | "heavy" | "double" | "dashed" | "dashed-heavy";
+
+const STYLES: LineStyle[] = ["light", "heavy", "double", "dashed", "dashed-heavy"];
+
 // Box-drawing character maps for each style
-const STYLE_CHARS = {
+const STYLE_CHARS: Record<LineStyle, Record<number, string>> = {
   light: {
     [UP]: "╵",
     [DOWN]: "╷",
@@ -98,25 +102,34 @@ const STYLE_CHARS = {
     [LEFT | RIGHT | UP]: "┻",
     [UP | DOWN | LEFT | RIGHT]: "╋",
   },
-} satisfies Record<string, Record<number, string>>;
-
-type LineStyle = keyof typeof STYLE_CHARS;
-
-const STYLES: LineStyle[] = Object.keys(STYLE_CHARS) as LineStyle[];
+};
 
 interface CellData {
   directions: number;
-  zIndex: number; // highest z-index that touched this cell
+  zIndex: number;
+}
+
+interface IndexData {
+  char: string;
+  zIndex: number;
 }
 
 export interface LogRectsOptions {
   sizePerPoint?: number;
   showLegend?: boolean;
-  startWithNewLine?: boolean;
   dontLog?: boolean;
+  startWithNewLine?: boolean;
 }
 
-function findBoundaries(rectangles: Rect[]) {
+export function logRects(
+  rectangles: Rectangle[],
+  { sizePerPoint = 10, showLegend = true, dontLog = false, startWithNewLine = true }: LogRectsOptions = {}
+): string {
+  if (rectangles.length === 0) {
+    return "No rectangles to draw";
+  }
+
+  // Find bounding box of all rectangles
   let minX = Infinity;
   let minY = Infinity;
   let maxX = -Infinity;
@@ -129,20 +142,6 @@ function findBoundaries(rectangles: Rect[]) {
     maxY = Math.max(maxY, rect.y + rect.height);
   }
 
-  return { minX, minY, maxX, maxY };
-}
-
-export function logRects(
-  rectangles: Rect[],
-  { sizePerPoint = 10, showLegend = true, startWithNewLine = true, dontLog = false }: LogRectsOptions = {}
-): string {
-  if (rectangles.length === 0) {
-    return "";
-  }
-
-  // Find bounding box of all rectangles
-  const { minX, minY, maxX, maxY } = findBoundaries(rectangles);
-
   // Calculate grid dimensions based on resolution
   const gridWidth = Math.ceil((maxX - minX) / sizePerPoint);
   const gridHeight = Math.ceil((maxY - minY) / sizePerPoint);
@@ -152,12 +151,14 @@ export function logRects(
     Array.from({ length: gridWidth }, () => ({ directions: 0, zIndex: -1 }))
   );
 
+  // Create index overlay grid
+  const indexGrid: (IndexData | null)[][] = Array.from({ length: gridHeight }, () => Array(gridWidth).fill(null));
+
   // Helper to set cell data with z-index awareness
   const setCell = (row: number, col: number, direction: number, zIndex: number) => {
     if (row < 0 || row >= gridHeight || col < 0 || col >= gridWidth) return;
     const cell = grid[row][col];
     if (zIndex >= cell.zIndex) {
-      // Higher or equal z-index takes over, reset directions
       if (zIndex > cell.zIndex) {
         cell.directions = 0;
         cell.zIndex = zIndex;
@@ -194,15 +195,45 @@ export function logRects(
     const endRow = Math.ceil((rect.y + rect.height - minY) / sizePerPoint) - 1;
 
     // Draw the four edges
-    drawHorizontal(startRow, startCol, endCol, zIndex); // Top
-    drawHorizontal(endRow, startCol, endCol, zIndex); // Bottom
-    drawVertical(startCol, startRow, endRow, zIndex); // Left
-    drawVertical(endCol, startRow, endRow, zIndex); // Right
+    drawHorizontal(startRow, startCol, endCol, zIndex);
+    drawHorizontal(endRow, startCol, endCol, zIndex);
+    drawVertical(startCol, startRow, endRow, zIndex);
+    drawVertical(endCol, startRow, endRow, zIndex);
+
+    // Place index at center of top edge if there's room
+    const indexStr = String(zIndex);
+    const edgeWidth = endCol - startCol; // number of segments (cells - 1)
+
+    // Need at least 1 line char on each side of the index
+    // Inner width (excluding corners) = edgeWidth - 1
+    // Required: innerWidth >= indexStr.length + 2
+    if (edgeWidth >= indexStr.length + 3) {
+      const innerWidth = edgeWidth - 1;
+      const indexStart = startCol + 1 + Math.floor((innerWidth - indexStr.length) / 2);
+
+      for (let i = 0; i < indexStr.length; i++) {
+        const col = indexStart + i;
+        if (col >= 0 && col < gridWidth && startRow >= 0 && startRow < gridHeight) {
+          const existing = indexGrid[startRow][col];
+          if (!existing || zIndex >= existing.zIndex) {
+            indexGrid[startRow][col] = { char: indexStr[i], zIndex };
+          }
+        }
+      }
+    }
   });
 
-  // Convert cell data to characters
-  const charGrid: string[][] = grid.map((row) =>
-    row.map((cell) => {
+  // Convert cell data to characters, respecting z-index for both edges and indices
+  const charGrid: string[][] = grid.map((row, rowIdx) =>
+    row.map((cell, colIdx) => {
+      const indexData = indexGrid[rowIdx][colIdx];
+
+      // If there's an index with higher or equal z-index, use it
+      if (indexData && indexData.zIndex >= cell.zIndex) {
+        return indexData.char;
+      }
+
+      // Otherwise use edge character
       if (cell.directions === 0) return " ";
       const style = STYLES[cell.zIndex % STYLES.length];
       return STYLE_CHARS[style][cell.directions] || "?";

@@ -1,6 +1,8 @@
 # console-rects
 
-A utility to visualize rectangles in the console using box-drawing characters. Created at Screen Studio to help debug geometry code when things get complex.
+A utility to visualize rectangles in the console using box-drawing characters. Perfect for debugging geometry code, visualizing overlapping rectangles, or drawing rectangles in the terminal. Created at Screen Studio to help debug geometry code when things get complex.
+
+**Use cases:** Debug rectangle collisions, visualize layout calculations, log rectangles to console, debug geometry code, visualize overlapping rectangles in terminal.
 
 ## Installation
 
