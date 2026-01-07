@@ -1,0 +1,52 @@
+{
+  "name": "console-rects",
+  "version": "0.1.0",
+  "description": "",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [],
+  "author": {
+    "name": "Adam Pietrasiak",
+    "email": "adam@pietrasiak.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pie6k/console-rects.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pie6k/console-rects/issues"
+  },
+  "homepage": "https://github.com/pie6k/console-rects#readme",
+  "scripts": {
+    "build": "vite build && tsc --emitDeclarationOnly",
+    "clean": "rm -rf dist",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "bench": "vitest bench tests/benchmark.bench.ts",
+    "readme": "cp ../README.md ./README.md",
+    "release": "yarn build && npm publish"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^27",
+    "@types/node": "^24.9.1",
+    "@vitest/coverage-v8": "4.0.1",
+    "jsdom": "^27.0.1",
+    "typescript": "^5.9.3",
+    "vite": "^5.0.0",
+    "vitest": "^4.0.1"
+  }
+}

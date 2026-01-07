@@ -1,0 +1,14 @@
+{
+  "name": "@console-rects/root",
+  "private": true,
+  "version": "0.0.1",
+  "packageManager": "yarn@4.10.3",
+  "workspaces": {
+    "packages": [
+      "console-rects"
+    ]
+  },
+  "scripts": {
+    "cr": "yarn workspace console-rects"
+  }
+}
