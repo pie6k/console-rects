@@ -126,6 +126,7 @@ export function logRects(rectangles: Rectangle[], options?: LogRectsOptions): vo
 - `showLegend` (default: `true`) - Show coordinate labels at corners.
 - `listRectangles` (default: `true`) - List rectangles in the output.
 - `startWithNewLine` (default: `true`) - Add a newline before the output.
+- `adjustOutputHeight` (default: `true`) - In terminal, each character is 2x taller than wide, so we need to adjust the height accordingly so eg square rectangles actually look square in the terminal.
 
 ```typescript
 logRects(rectangles, {
