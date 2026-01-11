@@ -17,9 +17,9 @@ yarn install console-rects
 import { logRects, getRectsLog } from "console-rects";
 
 const rectangles = [
-  { x: 0, y: 0, width: 100, height: 100 },
-  { x: 40, y: 40, width: 100, height: 100 },
-  { x: 80, y: 80, width: 100, height: 100 },
+  { x: 0, y: 0, width: 100, height: 100 }, // light
+  { x: 40, y: 40, width: 100, height: 100 }, // heavy
+  { x: 80, y: 80, width: 100, height: 100 }, // double
 ];
 
 logRects(rectangles);
@@ -29,26 +29,16 @@ getRectsLog(rectangles); // returns the string without logging to console
 This will output a visual representation of the rectangles in your console:
 
 ```
-[0, 0]
-       ┌───0────┐
-       │        │
-       │        │
-       │        │
-       │   ┏━━━1━━━━┓
-       │   ┃    │   ┃
-       │   ┃    │   ┃
-       │   ┃    │   ┃
-       │   ┃   ╔═══2════╗
-       └───┃───║┘   ┃   ║
-           ┃   ║    ┃   ║
-           ┃   ║    ┃   ║
-           ┃   ║    ┃   ║
-           ┗━━━║━━━━┛   ║
-               ║        ║
-               ║        ║
-               ║        ║
-               ╚════════╝
-                          [180, 180]
+[0, 0]                 Rectangles (3):
+┏━━━0━━━━┓             0: [ 0,  0, 100, 100]
+┃   ┌───1────┐         1: [40, 40, 100, 100]
+┃   │    ┃   │         2: [80, 80, 100, 100]
+┃   │   ┌╌╌╌2╌╌╌╌┐
+┗━━━│━━━╎┛   │   ╎
+    └───╎────┘   ╎
+        ╎        ╎
+        └╌╌╌╌╌╌╌╌┘
+        [180, 180]
 ```
 
 Each rectangle gets a different line style (light, heavy, double, dashed, dashed-heavy) based on its position in the array.
@@ -56,35 +46,24 @@ Each rectangle gets a different line style (light, heavy, double, dashed, dashed
 You can also use it for snapshot testing:
 
 ```ts
-expect(getRectsLog([transformer.zoom(2.5, { x: 0, y: 0.5 }, avaliableSize), avaliableSize])).toMatchInlineSnapshot(`
+expect(testLayout(layout)).toMatchInlineSnapshot(`
   "
-  [-50, -75]
-              ┌───────────0───────────┐
-              │                       │
-              │                       │
-              │                       │
-              │                       │
-              │                       │
-              │                       │
-              ┏━━━━━━━━1━━━━━━━━━┓    │
-              ┃                  ┃    │
-              ┃                  ┃    │
-              ┃                  ┃    │
-              ┃                  ┃    │
-              ┃                  ┃    │
-              ┃                  ┃    │
-              ┃                  ┃    │
-              ┃                  ┃    │
-              ┃                  ┃    │
-              ┗━━━━━━━━━━━━━━━━━━┛    │
-              │                       │
-              │                       │
-              │                       │
-              │                       │
-              │                       │
-              │                       │
-              └───────────────────────┘
-                                        [200, 175]"
+  [0, 0]                                                                  Rectangles (3):
+  ┌╌╌╌╌╌╌╌╌╌╌╌╌╌camera╌╌╌╌╌╌╌╌╌╌╌╌╌┐───────────recording────────────┐     recording: [100, 0, 100, 100]
+  ╎                                ╎                                │     camera   : [  0, 0, 100, 100]
+  ╎                                ╎                                │
+  ╎                                ╎                                │
+  ╎                                ╎                                │
+  ╎                                ╎                                │
+  ╎                                ╎                                │
+  ╎                                ╎                                │
+  ╎                                ╎                                │
+  ╎                                ╎                                │
+  ╎                                ╎                                │
+  ╎                                ╎                                │
+  ╎                                ╎                                │
+  └╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┘────────────────────────────────┘
+                                                            [200, 100]"
 `);
 ```
 

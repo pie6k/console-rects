@@ -13,7 +13,14 @@ const RIGHT = 8;
 
 type LineStyle = "light" | "heavy" | "double" | "dashed" | "dashed-heavy";
 
-const STYLES: LineStyle[] = ["light", "heavy", "double", "dashed", "dashed-heavy"];
+const STYLES: LineStyle[] = [
+  //
+  "heavy", // ╹╻╸╺━┃┏┓┛┗┣┫┳┻┼
+  "light", // ╵╷╴╶─│┌┐└┘├┤┬┴┼
+  "dashed", // ╎╎╌╌╎┌┐└┘├┤┬┴┼
+  "dashed-heavy", // ╏╏╍╍╏┏┓┛┗┣┫┳┻┼
+  "double", // ║║═║╔╗╚╝╠╣╦╩╬
+];
 
 // Box-drawing character maps for each style
 const STYLE_CHARS: Record<LineStyle, Record<number, string>> = {
@@ -117,16 +124,91 @@ interface IndexData {
 export interface LogRectsOptions {
   sizePerPoint?: number;
   showLegend?: boolean;
-  dontLog?: boolean;
+  listRectangles?: boolean;
   startWithNewLine?: boolean;
+  adjustOutputHeight?: boolean;
 }
 
-export function logRects(
-  rectangles: Rectangle[],
-  { sizePerPoint = 10, showLegend = true, dontLog = false, startWithNewLine = true }: LogRectsOptions = {}
-): string {
+function maxBy<T>(array: T[], selector: (item: T) => number): number {
+  return array.reduce((max, item) => {
+    const value = selector(item);
+    return value > max ? value : max;
+  }, -Infinity);
+}
+
+function createRectsDescriptions(rectangles: NamedRectangle[]) {
+  const maxNameLength = maxBy(rectangles, (rect) => rect.name.length);
+  const maxXLength = maxBy(rectangles, (rect) => rect.x.toString().length);
+  const maxYLength = maxBy(rectangles, (rect) => rect.y.toString().length);
+  const maxWidthLength = maxBy(rectangles, (rect) => rect.width.toString().length);
+  const maxHeightLength = maxBy(rectangles, (rect) => rect.height.toString().length);
+
+  const descriptions = rectangles.map((rect) => {
+    const name = rect.name.padEnd(maxNameLength, " ");
+    const x = rect.x.toString().padStart(maxXLength, " ");
+    const y = rect.y.toString().padStart(maxYLength, " ");
+    const width = rect.width.toString().padStart(maxWidthLength, " ");
+    const height = rect.height.toString().padStart(maxHeightLength, " ");
+    return `${name}: [${x}, ${y}, ${width}, ${height}]`;
+  });
+
+  descriptions.unshift(`Rectangles (${rectangles.length}):`);
+
+  return descriptions;
+}
+
+function addDescriptionsToLines(lines: string[], descriptions: string[], padding: number = 5) {
+  const longestLineLength = maxBy(lines, (line) => line.length);
+  for (let i = 0; i < descriptions.length; i++) {
+    if (i >= descriptions.length) break;
+
+    const line = lines[i] ?? "";
+
+    lines[i] = line.padEnd(longestLineLength + padding, " ");
+    lines[i] += descriptions[i];
+  }
+  return lines;
+}
+
+type Maybe<T> = T | null | undefined;
+
+export type RectsLogInput = Array<Maybe<Rectangle>> | Record<string, Maybe<Rectangle>>;
+
+function getIsSet<T>(value: Maybe<T>): value is T {
+  return value !== null && value !== undefined;
+}
+
+interface NamedRectangle extends Rectangle {
+  name: string;
+}
+
+function resolveInput(input: RectsLogInput): NamedRectangle[] {
+  if (Array.isArray(input)) {
+    return input.filter(getIsSet).map((rect, index) => ({ ...rect, name: String(index) }));
+  }
+
+  return Object.entries(input)
+    .filter(([, rect]) => !!rect)
+    .map(([name, rect]) => ({ ...rect!, name }));
+}
+
+export function getRectsLog(
+  input: RectsLogInput,
+  {
+    sizePerPoint = 10,
+    showLegend = true,
+    listRectangles = true,
+    startWithNewLine = true,
+    adjustOutputHeight = true,
+  }: LogRectsOptions = {}
+): string | null {
+  const rectangles = resolveInput(input);
+
+  const xSizePerPoint = sizePerPoint;
+  const ySizePerPoint = adjustOutputHeight ? sizePerPoint * 2 * 1.2 : sizePerPoint;
+
   if (rectangles.length === 0) {
-    return "No rectangles to draw";
+    return null;
   }
 
   // Find bounding box of all rectangles
@@ -143,8 +225,8 @@ export function logRects(
   }
 
   // Calculate grid dimensions based on resolution
-  const gridWidth = Math.ceil((maxX - minX) / sizePerPoint);
-  const gridHeight = Math.ceil((maxY - minY) / sizePerPoint);
+  const gridWidth = Math.ceil((maxX - minX) / xSizePerPoint);
+  const gridHeight = Math.ceil((maxY - minY) / ySizePerPoint);
 
   // Create grid to track directions and z-index at each cell
   const grid: CellData[][] = Array.from({ length: gridHeight }, () =>
@@ -188,20 +270,20 @@ export function logRects(
   };
 
   // Draw each rectangle's outline with z-index = array index
-  rectangles.forEach((rect, zIndex) => {
-    const startCol = Math.floor((rect.x - minX) / sizePerPoint);
-    const startRow = Math.floor((rect.y - minY) / sizePerPoint);
-    const endCol = Math.ceil((rect.x + rect.width - minX) / sizePerPoint) - 1;
-    const endRow = Math.ceil((rect.y + rect.height - minY) / sizePerPoint) - 1;
+  rectangles.forEach((rect, index) => {
+    const startCol = Math.floor((rect.x - minX) / xSizePerPoint);
+    const startRow = Math.floor((rect.y - minY) / ySizePerPoint);
+    const endCol = Math.ceil((rect.x + rect.width - minX) / xSizePerPoint) - 1;
+    const endRow = Math.ceil((rect.y + rect.height - minY) / ySizePerPoint) - 1;
 
     // Draw the four edges
-    drawHorizontal(startRow, startCol, endCol, zIndex);
-    drawHorizontal(endRow, startCol, endCol, zIndex);
-    drawVertical(startCol, startRow, endRow, zIndex);
-    drawVertical(endCol, startRow, endRow, zIndex);
+    drawHorizontal(startRow, startCol, endCol, index);
+    drawHorizontal(endRow, startCol, endCol, index);
+    drawVertical(startCol, startRow, endRow, index);
+    drawVertical(endCol, startRow, endRow, index);
 
     // Place index at center of top edge if there's room
-    const indexStr = String(zIndex);
+    const indexStr = rect.name;
     const edgeWidth = endCol - startCol; // number of segments (cells - 1)
 
     // Need at least 1 line char on each side of the index
@@ -215,8 +297,8 @@ export function logRects(
         const col = indexStart + i;
         if (col >= 0 && col < gridWidth && startRow >= 0 && startRow < gridHeight) {
           const existing = indexGrid[startRow][col];
-          if (!existing || zIndex >= existing.zIndex) {
-            indexGrid[startRow][col] = { char: indexStr[i], zIndex };
+          if (!existing || index >= existing.zIndex) {
+            indexGrid[startRow][col] = { char: indexStr[i], zIndex: index };
           }
         }
       }
@@ -240,23 +322,38 @@ export function logRects(
     })
   );
 
+  const CORNER_CHAR_DOT_ASCII = "•";
+
+  if (charGrid[0][0] === " ") {
+    charGrid[0][0] = "•";
+  }
+
+  if (charGrid[charGrid.length - 1][charGrid[0].length - 1] === " ") {
+    charGrid[charGrid.length - 1][charGrid[0].length - 1] = "•";
+  }
+
   // Build output string
-  const lines: string[] = [];
+  let lines: string[] = [];
 
   if (showLegend) {
     const topLeftLabel = `[${minX}, ${minY}]`;
     const bottomRightLabel = `[${maxX}, ${maxY}]`;
-    const padding = " ".repeat(topLeftLabel.length + 1);
 
     lines.push(topLeftLabel);
     for (const row of charGrid) {
-      lines.push(padding + row.join(""));
+      lines.push(row.join(""));
     }
-    lines.push(padding + " ".repeat(gridWidth) + " " + bottomRightLabel);
+    const lastPadding = Math.max(0, gridWidth - bottomRightLabel.length);
+    lines.push(" ".repeat(lastPadding) + bottomRightLabel);
   } else {
     for (const row of charGrid) {
       lines.push(row.join(""));
     }
+  }
+
+  if (listRectangles) {
+    const descriptions = createRectsDescriptions(rectangles);
+    lines = addDescriptionsToLines(lines, descriptions);
   }
 
   if (startWithNewLine) {
@@ -265,9 +362,9 @@ export function logRects(
 
   const output = lines.join("\n");
 
-  if (!dontLog) {
-    console.info(output);
-  }
-
   return output;
+}
+
+export function logRects(rectangles: Rectangle[], options?: LogRectsOptions): void {
+  console.info(getRectsLog(rectangles, options));
 }

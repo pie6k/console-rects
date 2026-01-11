@@ -1,4 +1,4 @@
-import { logRects } from "../index";
+import { getRectsLog } from "../index";
 
 describe("basic", () => {
   it("works", () => {
@@ -8,96 +8,55 @@ describe("basic", () => {
       { x: 80, y: 80, width: 100, height: 100 }, // double
     ];
 
-    expect(logRects(rectangles, { dontLog: true })).toMatchInlineSnapshot(`
+    expect(getRectsLog(rectangles)).toMatchInlineSnapshot(`
       "
-      [0, 0]
-             ┌───0────┐        
-             │        │        
-             │        │        
-             │        │        
-             │   ┏━━━1━━━━┓    
-             │   ┃    │   ┃    
-             │   ┃    │   ┃    
-             │   ┃    │   ┃    
-             │   ┃   ╔═══2════╗
-             └───┃───║┘   ┃   ║
-                 ┃   ║    ┃   ║
-                 ┃   ║    ┃   ║
-                 ┃   ║    ┃   ║
-                 ┗━━━║━━━━┛   ║
-                     ║        ║
-                     ║        ║
-                     ║        ║
-                     ╚════════╝
-                                [180, 180]"
+      [0, 0]                 Rectangles (3):
+      ┏━━━0━━━━┓             0: [ 0,  0, 100, 100]
+      ┃   ┌───1────┐         1: [40, 40, 100, 100]
+      ┃   │    ┃   │         2: [80, 80, 100, 100]
+      ┃   │   ┌╌╌╌2╌╌╌╌┐
+      ┗━━━│━━━╎┛   │   ╎
+          └───╎────┘   ╎
+              ╎        ╎
+              └╌╌╌╌╌╌╌╌┘
+              [180, 180]"
     `);
 
-    expect(logRects(rectangles, { dontLog: true, sizePerPoint: 20 })).toMatchInlineSnapshot(`
+    expect(getRectsLog(rectangles, { sizePerPoint: 20 })).toMatchInlineSnapshot(`
       "
-      [0, 0]
-             ┌─0─┐    
-             │   │    
-             │ ┏━1━┓  
-             │ ┃ │ ┃  
-             └─┃─╔═2═╗
-               ┃ ║ ┃ ║
-               ┗━║━┛ ║
-                 ║   ║
-                 ╚═══╝
-                       [180, 180]"
+      [0, 0]         Rectangles (3):
+      ┏━┌─1─┐        0: [ 0,  0, 100, 100]
+      ┃ │ ┌╌2╌┐      1: [40, 40, 100, 100]
+      ┗━└─╎─┘ ╎      2: [80, 80, 100, 100]
+          └╌╌╌┘
+      [180, 180]"
     `);
 
-    expect(logRects(rectangles, { dontLog: true, sizePerPoint: 20, showLegend: false })).toMatchInlineSnapshot(`
+    expect(getRectsLog(rectangles, { sizePerPoint: 20, showLegend: false })).toMatchInlineSnapshot(`
       "
-      ┌─0─┐    
-      │   │    
-      │ ┏━1━┓  
-      │ ┃ │ ┃  
-      └─┃─╔═2═╗
-        ┃ ║ ┃ ║
-        ┗━║━┛ ║
-          ║   ║
-          ╚═══╝"
+      ┏━┌─1─┐       Rectangles (3):
+      ┃ │ ┌╌2╌┐     0: [ 0,  0, 100, 100]
+      ┗━└─╎─┘ ╎     1: [40, 40, 100, 100]
+          └╌╌╌┘     2: [80, 80, 100, 100]"
     `);
 
-    expect(logRects(rectangles, { dontLog: true, sizePerPoint: 5, showLegend: false })).toMatchInlineSnapshot(`
+    expect(getRectsLog(rectangles, { sizePerPoint: 5, showLegend: false })).toMatchInlineSnapshot(`
       "
-      ┌────────0─────────┐                
-      │                  │                
-      │                  │                
-      │                  │                
-      │                  │                
-      │                  │                
-      │                  │                
-      │                  │                
-      │       ┏━━━━━━━━1━━━━━━━━━┓        
-      │       ┃          │       ┃        
-      │       ┃          │       ┃        
-      │       ┃          │       ┃        
-      │       ┃          │       ┃        
-      │       ┃          │       ┃        
-      │       ┃          │       ┃        
-      │       ┃          │       ┃        
-      │       ┃       ╔════════2═════════╗
-      │       ┃       ║  │       ┃       ║
-      │       ┃       ║  │       ┃       ║
-      └───────┃───────║──┘       ┃       ║
-              ┃       ║          ┃       ║
-              ┃       ║          ┃       ║
-              ┃       ║          ┃       ║
-              ┃       ║          ┃       ║
-              ┃       ║          ┃       ║
-              ┃       ║          ┃       ║
-              ┃       ║          ┃       ║
-              ┗━━━━━━━║━━━━━━━━━━┛       ║
-                      ║                  ║
-                      ║                  ║
-                      ║                  ║
-                      ║                  ║
-                      ║                  ║
-                      ║                  ║
-                      ║                  ║
-                      ╚══════════════════╝"
+      ┏━━━━━━━━0━━━━━━━━━┓                     Rectangles (3):
+      ┃                  ┃                     0: [ 0,  0, 100, 100]
+      ┃                  ┃                     1: [40, 40, 100, 100]
+      ┃       ┌────────1─────────┐             2: [80, 80, 100, 100]
+      ┃       │          ┃       │        
+      ┃       │          ┃       │        
+      ┃       │       ┌╌╌╌╌╌╌╌╌2╌╌╌╌╌╌╌╌╌┐
+      ┃       │       ╎  ┃       │       ╎
+      ┗━━━━━━━│━━━━━━━╎━━┛       │       ╎
+              │       ╎          │       ╎
+              │       ╎          │       ╎
+              └───────╎──────────┘       ╎
+                      ╎                  ╎
+                      ╎                  ╎
+                      └╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┘"
     `);
   });
 });
