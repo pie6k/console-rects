@@ -75,7 +75,7 @@ You can also use it for snapshot testing:
 Note that next to visual representation, the list of exact coordinates is also included so the test snapshot is never ambiguous.
 
 ```ts
-expect(getRectsLog(layout)).toMatchInlineSnapshot(`
+expect(getRectsLog({ camera: rect1, recording: rect2 })).toMatchInlineSnapshot(`
   "
   [0, 0]                                                                  Rectangles (3):
   ┌╌╌╌╌╌╌╌╌╌╌╌╌╌camera╌╌╌╌╌╌╌╌╌╌╌╌╌┐───────────recording────────────┐     recording: [100, 0, 100, 100]
