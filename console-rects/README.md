@@ -43,7 +43,36 @@ This will output a visual representation of the rectangles in your console:
 
 Each rectangle gets a different line style (light, heavy, double, dashed, dashed-heavy) based on its position in the array.
 
+You can also pass a record of rectangles:
+
+```ts
+const rectangles = {
+  foo: { x: 0, y: 0, width: 100, height: 100 },
+  bar: { x: 40, y: 40, width: 100, height: 100 },
+  baz: { x: 80, y: 80, width: 100, height: 100 },
+};
+
+getRectsLog(rectangles);
+```
+
+This will output named rectangles:
+
+```
+[0, 0]                 Rectangles (3):
+┏━━foo━━━┓             foo: [ 0,  0, 100, 100]
+┃   ┌───bar──┐         bar: [40, 40, 100, 100]
+┃   │    ┃   │         baz: [80, 80, 100, 100]
+┃   │   ┌╌╌baz╌╌╌┐
+┗━━━│━━━╎┛   │   ╎
+    └───╎────┘   ╎
+        ╎        ╎
+        └╌╌╌╌╌╌╌╌┘
+        [180, 180]
+```
+
 You can also use it for snapshot testing:
+
+Note that next to visual representation, the list of exact coordinates is also included so the test snapshot is never ambiguous.
 
 ```ts
 expect(testLayout(layout)).toMatchInlineSnapshot(`
