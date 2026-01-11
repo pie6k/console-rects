@@ -69,8 +69,33 @@ expect(testLayout(layout)).toMatchInlineSnapshot(`
 
 ## Options
 
+```ts
+interface Rectangle {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface LogRectsOptions {
+  sizePerPoint?: number;
+  showLegend?: boolean;
+  listRectangles?: boolean;
+  startWithNewLine?: boolean;
+  adjustOutputHeight?: boolean;
+}
+
+type Maybe<T> = T | null | undefined;
+
+export type RectsLogInput = Array<Maybe<Rectangle>> | Record<string, Maybe<Rectangle>>;
+
+export function getRectsLog(input: RectsLogInput, options?: LogRectsOptions): string | null;
+export function logRects(rectangles: Rectangle[], options?: LogRectsOptions): void;
+```
+
 - `sizePerPoint` (default: `10`) - Controls the resolution/scale. Smaller values = higher detail.
 - `showLegend` (default: `true`) - Show coordinate labels at corners.
+- `listRectangles` (default: `true`) - List rectangles in the output.
 - `startWithNewLine` (default: `true`) - Add a newline before the output.
 
 ```typescript
@@ -79,6 +104,11 @@ logRects(rectangles, {
   showLegend: false,
   startWithNewLine: false,
 });
+```
+
+```ts
+const logString = getRectsLog(rectangles, { listRectangles: false });
+console.log(logString);
 ```
 
 ## License
